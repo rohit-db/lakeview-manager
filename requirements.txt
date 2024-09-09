@@ -1,0 +1,5 @@
+pydantic
+requests
+pytest
+python-dotenv
+databricks-sdk

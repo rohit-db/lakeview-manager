@@ -1,0 +1,136 @@
+import json
+import os
+import datetime
+import logging
+from typing import Dict, Any
+
+import dotenv
+from databricks.sdk import WorkspaceClient
+from lakeview_dashboard.dashboard import LakeviewDashboard
+from lakeview_dashboard.models import *
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Load environment variables
+dotenv.load_dotenv()
+
+def get_config() -> Dict[str, Any]:
+    """Load configuration from environment variables."""
+    return {
+        "DATABRICKS_TOKEN": os.getenv("DATABRICKS_TOKEN"),
+        "HOST": os.getenv("DATABRICKS_HOST", "https://adb-984752964297111.11.azuredatabricks.net/"),
+        "WAREHOUSE_ID": os.getenv("WAREHOUSE_ID", "d1184b8c2a8a87eb")
+    }
+
+def initialize_client(config: Dict[str, Any]) -> WorkspaceClient:
+    """Initialize and return a Workspace Client."""
+    return WorkspaceClient(host=config["HOST"], token=config["DATABRICKS_TOKEN"])
+
+def create_dashboard_from_json(dashboard_manager: LakeviewDashboard, json_file_path: str) -> Any:
+    """Create a dashboard from a JSON file."""
+    try:
+        with open(json_file_path, "r") as file:
+            dashboard_data = json.load(file)
+        
+        dashboard_data["displayName"] = f"{dashboard_data['displayName']} - {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+        sample_dashboard = DashboardModel(**dashboard_data)
+        return dashboard_manager.create_dashboard(sample_dashboard)
+    except Exception as e:
+        logger.error(f"Error creating dashboard from JSON: {e}")
+        raise
+
+def create_dashboard_from_model(dashboard_manager: LakeviewDashboard, dashboard_model: DashboardModel) -> Any:
+    """Create a dashboard from a Dashboard Model."""
+    try:
+        return dashboard_manager.create_dashboard(dashboard_model)
+    except Exception as e:
+        logger.error(f"Error creating dashboard from model: {e}")
+        raise
+
+
+def create_sample_dashboard_model(config: Dict[str, Any]) -> DashboardModel:
+    """Create and return a sample Dashboard Model."""    
+    # Create the dashboard from a Dashboard Model
+
+        # Create a sample dataset
+    sample_dataset = DatasetModel(
+        displayName="Untitled dataset",
+        query="SELECT * FROM samples.nyctaxi.trips"
+    )
+
+    # Create text widgets
+    sample_text_widget = WidgetModel(
+        textbox_spec="# My Dashboard\nThis is a sample dashboard"
+    )
+
+    sample_text_widget_2 = WidgetModel(
+        textbox_spec="## Another Heading"
+    )
+
+    # Create a line chart widget
+    sample_line_widget = WidgetModel(
+        queries=[QueryModel(
+            name="main_query",
+            query=QueryDetailsModel(
+                datasetName=sample_dataset.name,
+                fields=[
+                    FieldModel(name="date", expression="`date`"),
+                    FieldModel(name="value", expression="`value`")
+                ],
+                disaggregated=False
+            )
+        )],
+        spec=SpecModel(
+            version=1,
+            widgetType="line",
+            encodings={
+                "x": EncodingModel(fieldName="date", scale={"type": "temporal"}, displayName="Date"),
+                "y": EncodingModel(fieldName="value", scale={"type": "quantitative"}, displayName="Value")
+            }
+        )
+    )
+
+    # Define the layout for widgets
+    sample_layouts = [
+        LayoutModel(widget=sample_text_widget,
+                    position=PositionModel(x=0, y=0, width=5, height=2)),
+        LayoutModel(widget=sample_text_widget_2,
+                    position=PositionModel(x=6, y=0, width=1, height=2)),
+        LayoutModel(widget=sample_line_widget,
+                    position=PositionModel(x=0, y=2, width=6, height=6))
+    ]
+
+    # Create a sample page with the layout
+    sample_page = PageModel(
+        displayName="New Page",
+        layout=sample_layouts
+    )
+
+    # Create the dashboard model
+    sample_dashboard = DashboardModel(
+        displayName=f"Test Dashboard {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+        datasets=[sample_dataset],
+        pages=[sample_page],
+        warehouse_id=config["WAREHOUSE_ID"]
+    )
+
+    return sample_dashboard
+
+def main():
+    config = get_config()
+    client = initialize_client(config)
+    dashboard_manager = LakeviewDashboard(client=client)
+
+    # Uncomment to create dashboard from JSON
+    # create_response = create_dashboard_from_json(dashboard_manager, "./examples/sample_dashboard_json/sample_dashboard.json")
+    # logger.info(f"Dashboard created with ID: {create_response.dashboard_id}")
+
+    sample_dashboard = create_sample_dashboard_model(config)
+    print(sample_dashboard)
+    create_response = create_dashboard_from_model(dashboard_manager, sample_dashboard)
+    logger.info(f"Dashboard created with ID: {create_response.dashboard_id}")
+
+if __name__ == "__main__":
+    main()

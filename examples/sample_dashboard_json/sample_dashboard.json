@@ -1,0 +1,103 @@
+{
+    "displayName": "Sample Dashboard",
+    "datasets": [
+      {
+        "name": "3753abac",
+        "displayName": "Untitled dataset",
+        "query": "select * from rohitb_demo.costa_mart.employees"
+      }
+    ],
+    "pages": [
+      {
+        "name": "b266a226",
+        "displayName": "New Page",
+        "layout": [
+          {
+            "widget": {
+              "name": "a3070c2b",
+              "textbox_spec": "# My Dashboard\nThis is a sample dashboard"
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "width": 6,
+              "height": 2
+            }
+          },
+          {
+            "widget": {
+              "name": "0f229c5c",
+              "queries": [
+                {
+                  "name": "main_query",
+                  "query": {
+                    "datasetName": "3753abac",
+                    "fields": [
+                      { "name": "JobTitle", "expression": "`JobTitle`" },
+                      { "name": "count(*)", "expression": "COUNT(`*`)" }
+                    ],
+                    "disaggregated": false
+                  }
+                }
+              ],
+              "spec": {
+                "version": 3,
+                "widgetType": "bar",
+                "encodings": {
+                  "x": { "fieldName": "JobTitle", "scale": { "type": "categorical" }, "displayName": "JobTitle" },
+                  "y": { "fieldName": "count(*)", "scale": { "type": "quantitative" }, "displayName": "Count of Records" }
+                },
+                "frame": { "showTitle": true, "showDescription": true, "title": "Widget Title", "description": "Widget Description" }
+              }
+            },
+            "position": {
+              "x": 0,
+              "y": 3,
+              "width": 3,
+              "height": 6
+            }
+          },
+          {
+            "widget": {
+              "name": "369c6d3c",
+              "queries": [
+                {
+                  "name": "dashboards/01ef6ea5962117a785de77ef4aeede11/datasets/01ef6ea599a91ca68bed95fd24f84c52_JobTitle",
+                  "query": {
+                    "datasetName": "3753abac",
+                    "fields": [
+                      { "name": "JobTitle", "expression": "`JobTitle`" },
+                      { "name": "JobTitle_associativity", "expression": "COUNT_IF(`associative_filter_predicate_group`)" }
+                    ],
+                    "disaggregated": false
+                  }
+                }
+              ],
+              "spec": {
+                "version": 2,
+                "widgetType": "filter-single-select",
+                "encodings": {
+                  "fields": [
+                    {
+                      "fieldName": "JobTitle",
+                      "displayName": "JobTitle",
+                      "queryName": "dashboards/01ef6ea5962117a785de77ef4aeede11/datasets/01ef6ea599a91ca68bed95fd24f84c52_JobTitle"
+                    }
+                  ]
+                },
+                "frame": { "showTitle": true, "title": "Filter Title" }
+              }
+            },
+            "position": {
+              "x": 0,
+              "y": 2,
+              "width": 2,
+              "height": 1
+            }
+          }
+        ]
+      }
+    ],
+    "warehouse_id": "d1184b8c2a8a87eb"
+  }
+  

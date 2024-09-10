@@ -80,65 +80,9 @@ def sample_dashboard():
         # Remove or adjust the spec field since it's a text-based widget.
     )
 
-    sample_bar_widget = WidgetModel(
-        name="0f229c5c",
-        queries=[QueryModel(
-            name="main_query",
-            query={
-                "datasetName": "3753abac",
-                "fields": [
-                    {"name": "JobTitle", "expression": "`JobTitle`"},
-                    {"name": "count(*)", "expression": "COUNT(`*`)"}
-                ],
-                "disaggregated": False
-            }
-        )],
-        spec=SpecModel(
-            version=3,
-            widgetType="bar",
-            encodings={
-                "x": {"fieldName": "JobTitle", "scale": {"type": "categorical"}, "displayName": "JobTitle"},
-                "y": {"fieldName": "count(*)", "scale": {"type": "quantitative"}, "displayName": "Count of Records"}
-            },
-            frame={"showTitle": True, "showDescription": True,
-                   "title": "Widget Title", "description": "Widget Description"}
-        )
-    )
-
-    sample_filter_widget = WidgetModel(
-        name="369c6d3c",
-        queries=[QueryModel(
-            name="dashboards/01ef6ea5962117a785de77ef4aeede11/datasets/01ef6ea599a91ca68bed95fd24f84c52_JobTitle",
-            query={
-                "datasetName": "3753abac",
-                "fields": [
-                    {"name": "JobTitle", "expression": "`JobTitle`"},
-                    {"name": "JobTitle_associativity",
-                        "expression": "COUNT_IF(`associative_filter_predicate_group`)"}
-                ],
-                "disaggregated": False
-            }
-        )],
-        spec=SpecModel(
-            version=2,
-            widgetType="filter-single-select",
-            encodings={
-                "fields": [
-                    {"fieldName": "JobTitle", "displayName": "JobTitle",
-                        "queryName": "dashboards/01ef6ea5962117a785de77ef4aeede11/datasets/01ef6ea599a91ca68bed95fd24f84c52_JobTitle"}
-                ]
-            },
-            frame={"showTitle": True, "title": "Filter Title"}
-        )
-    )
-
     sample_layouts = [
         LayoutModel(widget=sample_text_widget,
-                    position=PositionModel(x=0, y=0, width=6, height=2)),
-        LayoutModel(widget=sample_bar_widget, position=PositionModel(
-            x=0, y=3, width=3, height=6)),
-        LayoutModel(widget=sample_filter_widget,
-                    position=PositionModel(x=0, y=2, width=2, height=1))
+                    position=PositionModel(x=0, y=0, width=6, height=2))
     ]
 
     sample_page = PageModel(

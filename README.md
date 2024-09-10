@@ -59,70 +59,12 @@ def create_sample_dashboard_model(config: Dict[str, Any]) -> DashboardModel:
     sample_text_widget = TextWidgetModel(
         textbox_spec="# My Dashboard\nThis is a sample dashboard"
     )
-
-    sample_text_widget_2 = TextWidgetModel(
-        textbox_spec="## Another Heading"
-    )
-
-    # Create FieldModel instances
-    fields = [
-        FieldModel(name="pickup_datetime", expression="pickup_datetime"),
-        FieldModel(name="trip_distance", expression="trip_distance")
-    ]
-
-    # Create QueryDetailsModel instance
-    query_details = QueryDetailsModel(
-        datasetName=sample_dataset.name,
-        fields=fields,
-        disaggregated=False
-    )
-
-    # Create QueryModel instance
-    query_model = QueryModel(
-        name="main_query",
-        query=query_details
-    )
-
-    # Create SpecModel instance for a line chart
-    spec = SpecModel(
-        version=3,
-        widgetType="line",
-        encodings=EncodingModel(
-            x={
-                "fieldName": "pickup_datetime",
-                "scale": {"type": "temporal"},
-                "displayName": "Pickup DateTime"
-            },
-            y={
-                "fieldName": "trip_distance",
-                "scale": {"type": "quantitative"},
-                "displayName": "Trip Distance"
-            }
-        ),
-        frame=FrameModel(
-            showTitle=True,
-            title="Trip Distance Over Time"
-        )
-    )
-
-    # Create VisualizationWidgetModel instance
-    sample_line_widget = VisualizationWidgetModel(
-        name=generate_unique_id(),
-        queries=[query_model],
-        spec=spec
-    )
-
-    print(sample_line_widget)
-
     # Define the layout for widgets
     sample_layouts = [
         LayoutModel(widget=sample_text_widget,
                     position=PositionModel(x=0, y=0, width=5, height=2)),
         LayoutModel(widget=sample_text_widget_2,
-                    position=PositionModel(x=6, y=0, width=1, height=2)),
-        LayoutModel(widget=sample_line_widget,
-                    position=PositionModel(x=0, y=2, width=6, height=6))
-    ]
+                    position=PositionModel(x=6, y=0, width=1, height=2))    ]
 
     # Create a sample page with the layout
     sample_page = PageModel(

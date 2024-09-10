@@ -17,7 +17,8 @@ pip install -r requirements.txt
 Configure environment variables by creating a .env file:
 
 ```bash
-DATABRICKS_TOKEN=your-databricks-api-token```
+DATABRICKS_TOKEN=your-databricks-api-token
+```
 
 
 # Running Tests

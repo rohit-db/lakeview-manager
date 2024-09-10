@@ -1,7 +1,8 @@
 import pytest
 import json
 import os
-from lakeview_dashboard.models import DashboardModel
+# from lakeview_dashboard.models import DashboardModel
+from lakeview_dashboard.all_models import DashboardModel
 
 
 def test_create_dashboard(lakeview_dashboard, sample_dashboard):

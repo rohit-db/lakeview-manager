@@ -4,7 +4,10 @@ import dotenv
 import json
 from databricks.sdk import WorkspaceClient
 from lakeview_dashboard.dashboard import LakeviewDashboard
-from lakeview_dashboard.models import *
+from lakeview_dashboard.all_models import (
+    DashboardModel, DatasetModel, PageModel, LayoutModel, PositionModel,
+    TextWidgetModel, VisualizationWidgetModel, FilterWidgetModel, generate_unique_id
+)
 import datetime
 
 # Load environment variables from .env file
@@ -74,15 +77,20 @@ def sample_dashboard():
         query="select * from rohitb_demo.costa_mart.employees e join rohitb_demo.costa_mart.stores s on e.StoreId = s.storeID where s.storeID > 82"
     )
 
-    sample_text_widget = WidgetModel(
+    sample_text_widget = TextWidgetModel(
         name="a3070c2b",
         textbox_spec="# My Dashboard\nThis is a sample dashboard"
-        # Remove or adjust the spec field since it's a text-based widget.
+    )
+
+    sample_text_widget_3 = TextWidgetModel(
+        textbox_spec="## Another Heading"
     )
 
     sample_layouts = [
         LayoutModel(widget=sample_text_widget,
-                    position=PositionModel(x=0, y=0, width=6, height=2))
+                    position=PositionModel(x=0, y=0, width=6, height=2)),
+        LayoutModel(widget=sample_text_widget_3,
+                    position=PositionModel(x=0, y=2, width=6, height=2))
     ]
 
     sample_page = PageModel(

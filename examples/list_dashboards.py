@@ -28,9 +28,6 @@ def main():
 
     # Iterate over the generator object
     for dashboard in dashboards_iterator:
-        # print(f"Display Name: {dashboard.display_name}, Dashboard ID: {dashboard.dashboard_id}")
-
-        # path and parent_path are not included in the list response 
         # if dashboard.parent_path is not None and "/Users/rohit.bhagwat@databricks.com" in dashboard.parent_path and "Test Dashboard" in dashboard.display_name: 
         if "Test Dashboard" in dashboard.display_name:
             print(f"Delete Dashboard with ID: {dashboard.dashboard_id} and Display Name: {dashboard.display_name} in path {dashboard.parent_path}")

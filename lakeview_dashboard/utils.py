@@ -1,4 +1,4 @@
-from lakeview_dashboard.models import *
+from lakeview_dashboard.all_models import DashboardModel
 
 
 def replace_catalog_schema(query: str, old_catalog: str, old_schema: str, new_catalog: str, new_schema: str) -> str:

@@ -1,6 +1,7 @@
-from .models import *
+from lakeview_dashboard.all_models import DashboardModel
 from databricks.sdk import WorkspaceClient
 from typing import List, Dict, Any
+from databricks.sdk.service.dashboards import Dashboard
 
 
 class LakeviewDashboard:
@@ -23,9 +24,6 @@ class LakeviewDashboard:
         serialized_dashboard = updates.model_dump_json(
             by_alias=True, exclude_none=True)
 
-        # Debug: Print the serialized JSON to verify the structure
-        print("Serialized Dashboard JSON for Update:", serialized_dashboard)
-
         # Correctly update the dashboard with the right parameters
         response = self.client.lakeview.update(
             dashboard_id=dashboard_id,  # Pass the dashboard ID
@@ -36,7 +34,7 @@ class LakeviewDashboard:
         )
         return response
 
-    def get_dashboard(self, dashboard_id: str) -> Dict[str, Any]:
+    def get_dashboard(self, dashboard_id: str) -> Dashboard:
         # Use the client to get dashboard details
         response = self.client.lakeview.get(dashboard_id=dashboard_id)
         return response

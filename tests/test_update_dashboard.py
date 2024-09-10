@@ -1,6 +1,7 @@
 import pytest
 import datetime
-from lakeview_dashboard.utils import *
+from lakeview_dashboard.all_models import DashboardModel
+from lakeview_dashboard.utils import update_all_queries
 import json
 
 def test_update_dashboard_name(lakeview_dashboard, sample_dashboard):

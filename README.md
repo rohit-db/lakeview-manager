@@ -20,6 +20,127 @@ Configure environment variables by creating a .env file:
 DATABRICKS_TOKEN=your-databricks-api-token
 ```
 
+# Usage
+## Initialize th eWOrkspace Client and Lakeview Manager
+To get started, initialize the Workspace Client and Lakeview Manager:
+
+```python
+from lakeview_dashboard import WorkspaceClient, LakeviewDashboard
+
+DATABRICKS_TOKEN = "your_databricks_token"
+HOST = "https://<databricks-instance>"
+
+workspace_client = WorkspaceClient(token=DATABRICKS_TOKEN, host=HOST)
+lakeview_dashboard = LakeviewDashboard(client=workspace_client)
+```
+
+## Example Operations
+- **Creating a Dashboard**: Define the dashboard configuration using JSON or Python objects and create a new Lakeview Dashboard in Databricks.
+- **Updating a Dashboard**: Modify existing dashboard configurations and update them in Databricks.
+- **Updating Catalog and Schema names for queries in a dashboard**: This is useful when you want to rename the catalog or schema of a query in a dashboard.
+- **Exporting a Dashboard**: Save the current configuration of a dashboard to a JSON file.
+- **Importing a Dashboard**: Load a dashboard configuration from a JSON file into the current workspace.
+
+## Example creating Dashboard Model
+
+```python 
+def create_sample_dashboard_model(config: Dict[str, Any]) -> DashboardModel:
+    """Create and return a sample Dashboard Model."""
+    # Create the dashboard from a Dashboard Model
+
+    # Create a sample dataset
+    sample_dataset = DatasetModel(
+        name=generate_unique_id(),
+        displayName="Untitled dataset",
+        query="SELECT * FROM samples.nyctaxi.trips"
+    )
+
+    # Create text widgets
+    sample_text_widget = TextWidgetModel(
+        textbox_spec="# My Dashboard\nThis is a sample dashboard"
+    )
+
+    sample_text_widget_2 = TextWidgetModel(
+        textbox_spec="## Another Heading"
+    )
+
+    # Create FieldModel instances
+    fields = [
+        FieldModel(name="pickup_datetime", expression="pickup_datetime"),
+        FieldModel(name="trip_distance", expression="trip_distance")
+    ]
+
+    # Create QueryDetailsModel instance
+    query_details = QueryDetailsModel(
+        datasetName=sample_dataset.name,
+        fields=fields,
+        disaggregated=False
+    )
+
+    # Create QueryModel instance
+    query_model = QueryModel(
+        name="main_query",
+        query=query_details
+    )
+
+    # Create SpecModel instance for a line chart
+    spec = SpecModel(
+        version=3,
+        widgetType="line",
+        encodings=EncodingModel(
+            x={
+                "fieldName": "pickup_datetime",
+                "scale": {"type": "temporal"},
+                "displayName": "Pickup DateTime"
+            },
+            y={
+                "fieldName": "trip_distance",
+                "scale": {"type": "quantitative"},
+                "displayName": "Trip Distance"
+            }
+        ),
+        frame=FrameModel(
+            showTitle=True,
+            title="Trip Distance Over Time"
+        )
+    )
+
+    # Create VisualizationWidgetModel instance
+    sample_line_widget = VisualizationWidgetModel(
+        name=generate_unique_id(),
+        queries=[query_model],
+        spec=spec
+    )
+
+    print(sample_line_widget)
+
+    # Define the layout for widgets
+    sample_layouts = [
+        LayoutModel(widget=sample_text_widget,
+                    position=PositionModel(x=0, y=0, width=5, height=2)),
+        LayoutModel(widget=sample_text_widget_2,
+                    position=PositionModel(x=6, y=0, width=1, height=2)),
+        LayoutModel(widget=sample_line_widget,
+                    position=PositionModel(x=0, y=2, width=6, height=6))
+    ]
+
+    # Create a sample page with the layout
+    sample_page = PageModel(
+        displayName="New Page",
+        layout=sample_layouts
+    )
+
+    # Create the dashboard model
+    sample_dashboard = DashboardModel(
+        displayName=f"Test Dashboard {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+        datasets=[sample_dataset],
+        pages=[sample_page],
+        warehouse_id=config["WAREHOUSE_ID"]
+    )
+
+    return sample_dashboard
+
+```
 
 # Running Tests
 Run tests with:
@@ -27,3 +148,6 @@ Run tests with:
 ```bash
 pytest
 ```
+
+# Additional Information 
+- Documentation: Detailed API Documentation can be found at [Lakeview API Documentation](https://docs.databricks.com/dev-tools/api/latest/lakeview.html)

@@ -7,7 +7,8 @@ from typing import Dict, Any
 import dotenv
 from databricks.sdk import WorkspaceClient
 from lakeview_dashboard.dashboard import LakeviewDashboard
-from lakeview_dashboard.all_models import DashboardModel
+from lakeview_dashboard.models import *
+import datetime
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -42,10 +43,8 @@ def export_dashboard_to_json(lakeview_manager: LakeviewDashboard, dashboard_id: 
 
 def load_dashboard_model_from_existing_dashboard(lakeview_manager: LakeviewDashboard, dashboard_id: str) -> Any:
     dashboard = lakeview_manager.get_dashboard(dashboard_id)
-    dashboard_name = dashboard.display_name
     dashboard_json = json.loads(dashboard.serialized_dashboard)
     dashboard_model = DashboardModel(**dashboard_json)
-    dashboard_model.displayName = dashboard_name
     return dashboard_model
 
 def main():
@@ -53,27 +52,18 @@ def main():
     client = initialize_client(config)
     lakeview_manager = LakeviewDashboard(client)
 
-    dashboard_id = "01ef6f946dcc15a68a45655f63f5f03d"
-    # export_dashboard_to_json(lakeview_manager, dashboard_id)
-    dashboard_model = load_dashboard_model_from_existing_dashboard(lakeview_manager, dashboard_id)
-
-    dashboard_model.displayName = f"{dashboard_model.displayName} - {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-
-    def find_widget_by_frame_title(dashboard_model: DashboardModel, frame_title: str) -> Any:
-        """Find a widget by the frame's title within the dashboard_model."""
-        widgets = []
-        for page in dashboard_model.pages:
-            for layout in page.layout:
-                widget = layout.widget
-                if hasattr(widget, 'spec') and hasattr(widget.spec, 'frame') and widget.spec.frame.title == frame_title:
-                    widgets.append(widget)
-        return widgets
+    dashboard_id = "01ef6a4327221667b44f87de263f6c71"
+    # Using the databricks sdk to export and store in a json file  
+    export_dashboard_to_json(lakeview_manager, dashboard_id, file_path=f"{dashboard_id}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json") 
     
-    widgets = find_widget_by_frame_title(dashboard_model, "Top N Job Clusters")
+    # Using the lakeview api to load the lakeview manager dashboard model  
+    dashboard_model = load_dashboard_model_from_existing_dashboard(lakeview_manager, dashboard_id)
+    # Interact using dashboard model 
+    print(dashboard_model.display_name)
 
-    # Update the dashboard
-    response = lakeview_manager.update_dashboard(dashboard_id, dashboard_model)
-    print(f"Dashboard {response.display_name} updated successfully. Dashboard ID: {response.dashboard_id}. ETAG: {response.etag}")
+    # Create dashboard using dashboard_model
+    lakeview_manager.create_dashboard(dashboard_model)
+
 
 if __name__ == "__main__":
     main()
